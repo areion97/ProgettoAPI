@@ -3,10 +3,6 @@
 #include <stdlib.h>
  
  
-// Ogni nodo del grafo possiede una lista di adiacenza
-// Servono V liste di adiacenza dove V è il numero di nodi
-// Classifica dei k migliori grafi
-
 struct AdjListNode
 {
     int dest;
@@ -22,7 +18,7 @@ struct AdjList
 struct Graph
 {
     int V;
-    
+    int minHeap;
     struct AdjList* array;
 };
 
@@ -42,7 +38,7 @@ AdjListNode newAdjListNode(int dest, int weight) {
 Graph createGraph(int V) {
     Graph graph = (Graph) malloc(sizeof(struct Graph));
     graph->V = V;
- 
+    graph->minHeap = 0;
     graph->array = (AdjList) malloc(V * sizeof(struct AdjList));
  
  	int i = 0;
@@ -51,7 +47,8 @@ Graph createGraph(int V) {
  
     return graph;
 }
- 
+
+
 void addEdge(Graph graph, int src, int dest, int weight) {
 
     AdjListNode newNode = newAdjListNode(dest, weight);
@@ -63,12 +60,26 @@ void addEdge(Graph graph, int src, int dest, int weight) {
  
 void printGraph(Graph graph, int graphId);
 
+// Data structure handling
+
+// TODO calcolo cammini minimi algoritmo di Dijkstra
+int calculateMinHeap(Graph graph) {
+	return 0;
+}
+
+// Stampa la lista separata da spazi
+void topK(int k) {
+	//Print heap
+}
 
 
-// Top k stampa l'indice dei grafi che sono in classifica separati da uno spazio (non necessariamente in ordine)
-void topK() {
+// TODO strutture dati : maxHeap
+void updateRanking(int el) {
+	
+	//search e nel caso insert e heapify
 	
 }
+
 
 
 int main(int argc, char * argv[]) {
@@ -100,20 +111,15 @@ int main(int argc, char * argv[]) {
 					}
 				}
 			}
+			
+			updateRanking(calculateMinHeap(graph));
+			
 			printGraph(graph,graphId);
 			graphId++;
-			// DONE riuscire a stampare i grafi con le matrici di adiacenza
-			
-			
-			// Funzione che compara due grafi
-			// Struttura dati che compara in modo efficiente i grafi
-			// Guardi in base a k e ai grafi esistenti in memoria se il nuovo grafo sostituisce come classifica un precedente
-			
 			
 		}
-		
 		else if(strcmp(line,"TopK") == 0) {
-			topK();
+			topK(k);
 		}
 	}
 	
