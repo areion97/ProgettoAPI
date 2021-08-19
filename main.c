@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
  
@@ -17,20 +16,19 @@ struct AdjList
 struct Graph
 {
     int V;
-    int minHeap;
     struct AdjList* array;
 };
 
 
-struct MinHeapNode
+struct HeapNode
 {
     int  v;
+    // distance from source
     int dist;
 };
  
- typedef struct MinHeapNode* MinHeapNode;
 
-struct MinHeap
+struct Heap
 {
      
     // Number of heap nodes present currently
@@ -41,15 +39,15 @@ struct MinHeap
    
     // This is needed for decreaseKey()
     int *pos;   
-    MinHeapNode *array;
+    struct HeapNode **array;
 };
- 
- 
  
 typedef struct Graph* Graph;
 typedef struct AdjListNode* AdjListNode;
 typedef struct AdjList* AdjList;
-typedef struct MinHeap* MinHeap;
+typedef struct HeapNode* HeapNode;
+typedef struct Heap* Heap;
+
 
  
 AdjListNode newAdjListNode(int dest, int weight) {
@@ -63,7 +61,6 @@ AdjListNode newAdjListNode(int dest, int weight) {
 Graph createGraph(int V) {
     Graph graph = (Graph) malloc(sizeof(struct Graph));
     graph->V = V;
-    graph->minHeap = 0;
     graph->array = (AdjList) malloc(V * sizeof(struct AdjList));
  
  	int i = 0;
@@ -83,41 +80,25 @@ void addEdge(Graph graph, int src, int dest, int weight) {
 }
 
 
-MinHeapNode newMinHeapNode(int v, int dist) {
-    MinHeapNode minHeapNode = (MinHeapNode) malloc(sizeof(struct MinHeapNode));
+HeapNode createHeapNode(int v, int dist) {
+    HeapNode minHeapNode = (HeapNode) malloc(sizeof(struct HeapNode));
     minHeapNode->v = v;
     minHeapNode->dist = dist;
     return minHeapNode;
 }
  
-MinHeap createMinHeap(int capacity) {
-	MinHeap minHeap = (MinHeap) malloc(sizeof(struct MinHeap));
+Heap createHeap(int capacity) {
+	Heap minHeap = (Heap) malloc(sizeof(struct Heap));
     minHeap->pos = (int *)malloc(capacity * sizeof(int));
     minHeap->size = 0;
     minHeap->capacity = capacity;
-    minHeap->array = (MinHeapNode*) malloc(capacity *sizeof(MinHeapNode));
+    minHeap->array = (HeapNode*) malloc(capacity *sizeof(HeapNode));
     return minHeap;
 }
 
- 
-// Stampa il max Heap separato da spazi
-void topK(int k) {
-}
 
 
-// TODO strutture dati : maxHeap 
-//  dove nel root hai il peggior cammino quindi 
-//confrontandolo con quello da aggiungere
-// valuti se inserire o meno
-void updateRanking(int el) {
-	
-//confronti e nel caso + insert e heapify
-	
-}
-
-void printGraph(Graph graph, int graphId);
-
-void decreaseKey(MinHeap minHeap, int v, int dist) {
+void decreaseKey(Heap minHeap, int v, int dist) {
     // Get the index of v in  heap array
     int i = minHeap->pos[v];
  
@@ -131,7 +112,7 @@ void decreaseKey(MinHeap minHeap, int v, int dist) {
         // Swap this node with its parent
         minHeap->pos[minHeap->array[i]->v] = (i-1)/2;
         minHeap->pos[minHeap->array[(i-1)/2]->v] = i;
-        swapMinHeapNode(&minHeap->array[i], &minHeap->array[(i - 1) / 2]);
+        swapHeapNode(&minHeap->array[i], &minHeap->array[(i - 1) / 2]);
  
         // move to parent index
         i = (i - 1) / 2;
@@ -144,8 +125,7 @@ void decreaseKey(MinHeap minHeap, int v, int dist) {
 // This function also updates
 // position of nodes when they are swapped.
 // Position is needed for decreaseKey()
-void minHeapify(MinHeap minHeap,int idx)
-{
+void minHeapify(Heap minHeap,int idx) {
     int smallest, left, right;
     smallest = idx;
     left = 2 * idx + 1;
@@ -161,12 +141,11 @@ void minHeapify(MinHeap minHeap,int idx)
          minHeap->array[smallest]->dist )
       smallest = right;
  
-    if (smallest != idx)
-    {
+    if (smallest != idx) {
         // The nodes to be swapped in min heap
-        MinHeapNode smallestNode =
+        HeapNode smallestNode =
              minHeap->array[smallest];
-        MinHeapNode idxNode =
+        HeapNode idxNode =
                  minHeap->array[idx];
  
         // Swap positions
@@ -174,7 +153,7 @@ void minHeapify(MinHeap minHeap,int idx)
         minHeap->pos[idxNode->v] = smallest;
  
         // Swap nodes
-        swapMinHeapNode(&minHeap->array[smallest],
+        swapHeapNode(&minHeap->array[smallest],
                          &minHeap->array[idx]);
  
         minHeapify(minHeap, smallest);
@@ -182,29 +161,23 @@ void minHeapify(MinHeap minHeap,int idx)
 }
 
 
-int isInMinHeap(MinHeap minHeap, int v) {
+int isInHeap(Heap minHeap, int v) {
    if (minHeap->pos[v] < minHeap->size)
      return 1;
    return 0;
 }
  
-void printArr(int dist[], int n) {
-	printf("Vertex   Distance from Source\n");
-	for (int i = 0; i < n; ++i)
-		printf("%d \t\t %d\n", i, dist[i]);
-}
 
 
-MinHeapNode extractMin(MinHeap minHeap)
-{
+HeapNode extractMin(Heap minHeap) {
     if (isEmpty(minHeap))
         return NULL;
  
     // Store the root node
-    MinHeapNode root = minHeap->array[0];
+    HeapNode root = minHeap->array[0];
  
     // Replace root node with last node
-    MinHeapNode lastNode = minHeap->array[minHeap->size - 1];
+    HeapNode lastNode = minHeap->array[minHeap->size - 1];
     minHeap->array[0] = lastNode;
  
     // Update position of last node
@@ -218,46 +191,43 @@ MinHeapNode extractMin(MinHeap minHeap)
     return root;
 }
 
-int isEmpty(MinHeap minHeap)
-{
-    return minHeap->size == 0;
+int isEmpty(Heap heap) {
+    return heap->size == 0;
 }
 
 // A utility function to swap two
 // nodes of min heap.
 // Needed for min heapify
-void swapMinHeapNode(struct MinHeapNode** a,
-                     struct MinHeapNode** b)
-{
-    struct MinHeapNode* t = *a;
+void swapHeapNode(HeapNode* a, HeapNode* b) {
+    struct HeapNode* t = *a;
     *a = *b;
     *b = t;
 }
 
 // TODO Questa funzione deve restituire un intero che indichi il cammino minimo per quel grafo
-int calculateMinHeap(Graph graph, int src) {
+int dijkstraAlgorithm(Graph graph, int src) {
      
     // Get the number of vertices in graph
     int V = graph->V;
    
     // dist values used to pick
     // minimum weight edge in cut
-    int dist[V];    
+    int dist[V];
  
     // minHeap represents set E
-    MinHeap minHeap = createMinHeap(V);
+    Heap minHeap = createHeap(V);
  
     // Initialize min heap with all
     // vertices. dist value of all vertices
     for (int v = 0; v < V; ++v) {
         dist[v] = INT_MAX;
-        minHeap->array[v] = newMinHeapNode(v, dist[v]);
+        minHeap->array[v] = createHeapNode(v, dist[v]);
         minHeap->pos[v] = v;
     }
  
     // Make dist value of src vertex
     // as 0 so that it is extracted first
-    minHeap->array[src] = newMinHeapNode(src, dist[src]);
+    minHeap->array[src] = createHeapNode(src, dist[src]);
     minHeap->pos[src]   = src;
     dist[src] = 0;
     decreaseKey(minHeap, src, dist[src]);
@@ -272,7 +242,7 @@ int calculateMinHeap(Graph graph, int src) {
     while (!isEmpty(minHeap)) {
         // Extract the vertex with
         // minimum distance value
-        MinHeapNode minHeapNode = extractMin(minHeap);
+        HeapNode minHeapNode = extractMin(minHeap);
        
         // Store the extracted vertex number
         int u = minHeapNode->v;
@@ -289,7 +259,7 @@ int calculateMinHeap(Graph graph, int src) {
             // not finalized yet, and distance to v
             // through u is less than its
             // previously calculated distance
-            if (isInMinHeap(minHeap, v) == 1 && dist[u] != INT_MAX && pCrawl->weight + dist[u] < dist[v]) {
+            if (isInHeap(minHeap, v) == 1 && dist[u] != INT_MAX && pCrawl->weight + dist[u] < dist[v]) {
                 dist[v] = dist[u] + pCrawl->weight;
  
                 // update distance
@@ -301,10 +271,17 @@ int calculateMinHeap(Graph graph, int src) {
     }
  
     // print the calculated shortest distances
-    printArr(dist, V);
+    //printArr(dist, V);
+    
+    int minDistance = 0;
+
     return dist;
 }
 
+void topK(Heap maxHeap);
+void updateRanking(Heap maxHeap, int el);
+void printGraph(Graph graph, int graphId);
+void printArr(int dist[], int n);
 
 
 int main(int argc, char * argv[]) {
@@ -313,13 +290,16 @@ int main(int argc, char * argv[]) {
 	int d = 0;
 	int k = 0;
 	int graphId = 0;
+	int minPathValue = 100;
 
 	char line[100];
 	char input[20];
 	
 	fp = fopen("b.txt", "r");
-	fscanf(fp, "%d,%d", &d, &k);
-		
+	fscanf(fp, "%d %d", &d, &k);
+	
+	Heap maxHeap = createHeap(k);	
+	
 	while((fscanf(fp,"%s\n",&line)) != EOF) {
 
 		if(strcmp(line,"AggiungiGrafo") == 0) {
@@ -337,14 +317,22 @@ int main(int argc, char * argv[]) {
 				}
 			}
 			
-			updateRanking(calculateMinHeap(graph,0));
+			//TODO calcolare il cammino minimo
+			//int minPathValue = dijkstraAlgorithm(graph,0);
 			
-			printGraph(graph,graphId);
+			// @Test
+			updateRanking(maxHeap, minPathValue);
+			
+			
+			// @Test
+			minPathValue--;
+
+
 			graphId++;
 			
 		}
 		else if(strcmp(line,"TopK") == 0) {
-			topK(k);
+			topK(maxHeap);
 		}
 	}
 	
@@ -353,6 +341,40 @@ int main(int argc, char * argv[]) {
 	return 0;
 }
 
+void topK(Heap maxHeap) {
+	for(int i = 0; i < maxHeap->size; i++) {
+		printf("%d ",maxHeap->array[i]->dist);
+	}
+}
+
+void updateRanking(Heap maxHeap, int el) {
+
+	HeapNode newHeapNode = NULL;
+
+	if(isEmpty(maxHeap) == 1) {
+		newHeapNode = createHeapNode(maxHeap->size,el);
+		printf("Inserisco il primo nodo %d\n", el);
+	}
+	else {
+			HeapNode root = maxHeap->array[0];
+			printf("El %d is < of root %d ? %d\n\n", el, root->dist, el < root->dist);
+			if(el < root->dist) {
+				newHeapNode = createHeapNode(maxHeap->size,el);
+				printf("Inserisco Nodo%d", el);
+			}
+			else {
+				return;
+			}
+	}
+	
+	maxHeap->size++;
+	maxHeap->array[maxHeap->size-1] = newHeapNode;
+	printHeap(maxHeap);
+
+	// TODO ordinare max Heap
+	//minHeapify(maxHeap,el);
+	
+}
 
 void printGraph(Graph graph, int graphId) {
     int v;	
@@ -365,6 +387,19 @@ void printGraph(Graph graph, int graphId) {
         }
         printf("\n");
     }
+}
+
+
+void printArr(int dist[], int n) {
+	printf("Vertex   Distance from Source\n");
+	for (int i = 0; i < n; ++i)
+		printf("%d \t\t %d\n", i, dist[i]);
+}
+
+void printHeap(Heap heap) {
+	printf("Heap Representation\n");
+	for (int i = 0; i < heap->size; ++i)
+		printf("%d \t\t %d\n", heap->array[i]->v, heap->array[i]->dist);
 }
  
 
