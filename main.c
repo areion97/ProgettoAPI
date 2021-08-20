@@ -27,7 +27,6 @@ struct HeapNode
  
 struct Heap
 {
-     
     int size;    
     int capacity; 
    
@@ -52,7 +51,8 @@ AdjListNode newAdjListNode(int dest, int weight) {
 }
 
 Graph createGraph(int V) {
-    Graph graph = (Graph) malloc(sizeof(struct Graph));
+    
+	Graph graph = (Graph) malloc(sizeof(struct Graph));
     graph->V = V;
     graph->array = (AdjList) malloc(V * sizeof(struct AdjList));
  
@@ -108,11 +108,6 @@ void decreaseKey(Heap minHeap, int v, int dist) {
     }
 }
 
-// A standard function to
-// heapify at given idx
-// This function also updates
-// position of nodes when they are swapped.
-// Position is needed for decreaseKey()
 void minHeapify(Heap minHeap, int idx) {
     int smallest, left, right;
     smallest = idx;
@@ -126,46 +121,66 @@ void minHeapify(Heap minHeap, int idx) {
       smallest = right;
  
     if (smallest != idx) {
-        // The nodes to be swapped in min heap
         HeapNode smallestNode = minHeap->array[smallest];
         HeapNode idxNode = minHeap->array[idx];
  
-        // Swap positions
         minHeap->pos[smallestNode->v] = idx;
         minHeap->pos[idxNode->v] = smallest;
  
-        // Swap nodes
         swapHeapNode(&minHeap->array[smallest], &minHeap->array[idx]);
  
         minHeapify(minHeap, smallest);
     }
 }
 
-// @Test
-void maxHeapify(Heap maxHeap, int root) {
-    int greatest, left, right;
-    greatest = root;
-    left = 2 * root + 1;
-    right = 2 * root + 2;
+void addChild(Heap maxHeap, int child) {
+    int parent = (int)child/2;
  
-    if (left < maxHeap->size && maxHeap->array[left]->dist > maxHeap->array[greatest]->dist )
-      greatest = left;
+    if (maxHeap->array[parent]->dist >= maxHeap->array[child-1]->dist ) {
+    	return;
+    }
  
-    if (right < maxHeap->size && maxHeap->array[right]->dist > maxHeap->array[greatest]->dist )
-      greatest = right;
+    if (child != parent) {
+    	
+        swapHeapNode(&maxHeap->array[child-1], &maxHeap->array[parent]);
+        addChild(maxHeap, parent);
+    }
+}
+
+void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
  
-    if (greatest != root) {
-        HeapNode greatestNode = maxHeap->array[greatest];
-        HeapNode idxNode = maxHeap->array[root];
+    // If left child is larger than root
+    if (l < n && arr[l] > arr[largest])
+        largest = l;
  
-        // Swap positions
-        maxHeap->pos[greatestNode->v] = root;
-        maxHeap->pos[idxNode->v] = greatest;
+    // If right child is larger than largest so far
+    if (r < n && arr[r] > arr[largest])
+        largest = r;
  
-        // Swap nodes
-        swapHeapNode(&maxHeap->array[greatest], &maxHeap->array[root]);
-        
-        maxHeapify(maxHeap, greatest);
+    // If largest is not root
+    if (largest != i) {
+        swapHeapNode(arr[i], arr[largest]);
+ 
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest);
+    }
+}
+ 
+void heapSort(int arr[], int n) {
+    // Build heap (rearrange array)
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+ 
+    // One by one extract an element from heap
+    for (int i = n - 1; i > 0; i--) {
+        // Move current root to end
+        swapHeapNode(arr[0], arr[i]);
+ 
+        // call max heapify on the reduced heap
+        heapify(arr, i, 0);
     }
 }
 
@@ -191,28 +206,6 @@ HeapNode extractMin(Heap minHeap) {
     return root;
 }
 
-// @Test
-HeapNode extractMax(Heap maxHeap) {
-    if(isEmpty(maxHeap))
-        return NULL;
- 
-    // Store the root node
-    HeapNode root = maxHeap->array[0];
- 
-    // Replace root node with last node
-    HeapNode lastNode = maxHeap->array[maxHeap->size - 1];
-    maxHeap->array[0] = lastNode;
- 
-    // Update position of last node
-    maxHeap->pos[root->v] = maxHeap->size-1;
-    maxHeap->pos[lastNode->v] = 0;
- 
-    // Reduce heap size and heapify root
-    --maxHeap->size;
-    maxHeapify(maxHeap, 0);
- 
-    return root;
-}
 void swapHeapNode(HeapNode* a, HeapNode* b) {
     struct HeapNode* t = *a;
     *a = *b;
@@ -228,7 +221,6 @@ int isInHeap(Heap minHeap, int v) {
 int isEmpty(Heap heap) {
     return heap->size == 0;
 }
-
 // TODO Questa funzione deve restituire un intero che indichi il cammino minimo per quel grafo
 int dijkstraAlgorithm(Graph graph, int src) {
      
@@ -316,7 +308,7 @@ int main(int argc, char * argv[]) {
 	
 	char line[100];
 	int minPathValue = 0;
-	
+	int flag = 1;
 	fp = fopen("c.txt", "r");
 	fscanf(fp, "%d %d", &d, &k);
 	
@@ -342,8 +334,12 @@ int main(int argc, char * argv[]) {
 			//int minPathValue = dijkstraAlgorithm(graph,0);
 			
 			minPathValue = rand() % 100;
-
-			// @Test
+			
+			if(flag == 0 && k == maxHeap->size) {
+				heapSort(maxHeap->array, k);
+				flag = 1;
+			}
+			
 			updateRanking(maxHeap,k,minPathValue);
 		
 			graphId++;
@@ -355,7 +351,6 @@ int main(int argc, char * argv[]) {
 	}
 	
 	fclose(fp);
-	
 	return 0;
 }
 
@@ -364,30 +359,37 @@ void topK(Heap maxHeap) {
 		printf("%d ",maxHeap->array[i]->dist);
 	}
 }
-
+// @Develop and @Test
 void updateRanking(Heap maxHeap, int k, int el) {
 
 	HeapNode newHeapNode = NULL;
 
-	if(maxHeap->size < k) {
-		newHeapNode = createHeapNode(maxHeap->size,el);
-		printf("Inserisco il nodo alla classifica %d\n", el);
-	}
-	else {
-			HeapNode root = maxHeap->array[0];
-			printf("El %d is < of root %d ? %d\n\n", el, root->dist, el < root->dist);
-			if(el < root->dist) {
-				newHeapNode = createHeapNode(maxHeap->size,el);
-				extractMax(maxHeap);
-			}
-			else {
-				return;
-			}
+	if(maxHeap->size > k) {
+		return;
 	}
 	
-	maxHeap->size++;
-	maxHeap->array[maxHeap->size-1] = newHeapNode;
-	//@Test
+	if(maxHeap->size == k) {
+
+		HeapNode root = maxHeap->array[0];
+		
+		printf("El %d is < of root %d ? %d\n\n", el, root->dist, el < root->dist);
+		
+		if(el < root->dist) {
+			newHeapNode = createHeapNode(maxHeap->size,el);
+			maxHeap->size++;
+			maxHeap->array[maxHeap->size-1] = newHeapNode;
+			addChild(maxHeap, maxHeap->size);
+			//Dealloc memory the node has been sostituted
+			//maxHeap->array[maxHeap->size-1] = NULL;
+		} else {
+			return;
+		}
+	} else if(maxHeap->size < k) {
+		newHeapNode = createHeapNode(maxHeap->size,el);
+		maxHeap->size++;
+		maxHeap->array[maxHeap->size-1] = newHeapNode;
+		printf("Inserisco il nodo alla classifica %d\n", el);
+	}
 	
 	printHeap(maxHeap);
 	
@@ -417,6 +419,4 @@ void printHeap(Heap heap) {
 	for (int i = 0; i < heap->size; i++)
 		printf("%d \t\t %d\n", heap->array[i]->v, heap->array[i]->dist);
 }
- 
-
 
