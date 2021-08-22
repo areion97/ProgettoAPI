@@ -152,40 +152,30 @@ void addChild(Heap maxHeap, int child) {
     }
 }
 
-void heapify(HeapNode arr[], int n, int i) {
+void heapify(HeapNode *arr, int n, int i) {
     int largest = i;
     int l = 2 * i + 1;
     int r = 2 * i + 2;
 
-
-    // If left child is larger than root
-    if (l < n && arr[l] > arr[largest])
+    if (l < n && arr[l]->dist < arr[largest]->dist)
         largest = l;
 
-    // If right child is larger than largest so far
-    if (r < n && arr[r] > arr[largest])
+    if (r < n && arr[r]->dist < arr[largest]->dist)
         largest = r;
 
-    // If largest is not root
     if (largest != i) {
-        swapHeapNode(arr[i], arr[largest]);
-
-        // Recursively heapify the affected sub-tree
+        swapHeapNode(&arr[i], &arr[largest]);
         heapify(arr, n, largest);
     }
 }
 
-void heapSort(HeapNode arr[], int n) {
-    // Build heap (rearrange array)
+void heapSort(HeapNode *arr, int n) {
+
     for (int i = n / 2 - 1; i >= 0; i--)
         heapify(arr, n, i);
 
-    // One by one extract an element from heap
     for (int i = n - 1; i > 0; i--) {
-        // Move current root to end
-        swapHeapNode(arr[0], arr[i]);
-
-        // call max heapify on the reduced heap
+        swapHeapNode(&arr[0], &arr[i]);
         heapify(arr, i, 0);
     }
 }

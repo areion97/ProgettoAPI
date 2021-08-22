@@ -6,9 +6,11 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/Famiglia/Desktop/ProgettoTesi/main.c
+C:/Users/Famiglia/Desktop/ProgettoAPI/main.c
 stdio.h
 -
 stdlib.h
+-
+string.h
 -
 
