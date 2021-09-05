@@ -44,19 +44,19 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = "C:\Program Files\JetBrains\CLion 2021.2\bin\cmake\win\bin\cmake.exe"
+CMAKE_COMMAND = "C:\Program Files\JetBrains\CLion 2021.2.1\bin\cmake\win\bin\cmake.exe"
 
 # The command to remove a file.
-RM = "C:\Program Files\JetBrains\CLion 2021.2\bin\cmake\win\bin\cmake.exe" -E rm -f
+RM = "C:\Program Files\JetBrains\CLion 2021.2.1\bin\cmake\win\bin\cmake.exe" -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\Famiglia\Desktop\ProgettoAPI
+CMAKE_SOURCE_DIR = "C:\Users\Andrea Sestito\Desktop\ProgettoAPI"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\Famiglia\Desktop\ProgettoAPI\cmake-build-debug
+CMAKE_BINARY_DIR = "C:\Users\Andrea Sestito\Desktop\ProgettoAPI\cmake-build-debug"
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -80,14 +80,14 @@ clean: CMakeFiles/ProgettoTesi.dir/clean
 CMakeFiles/ProgettoTesi.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\ProgettoTesi.dir\build.make CMakeFiles/ProgettoTesi.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\ProgettoTesi.dir\build.make CMakeFiles/ProgettoTesi.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\Famiglia\Desktop\ProgettoAPI\cmake-build-debug\CMakeFiles --progress-num=1,2 "Built target ProgettoTesi"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="C:\Users\Andrea Sestito\Desktop\ProgettoAPI\cmake-build-debug\CMakeFiles" --progress-num=1,2 "Built target ProgettoTesi"
 .PHONY : CMakeFiles/ProgettoTesi.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/ProgettoTesi.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Famiglia\Desktop\ProgettoAPI\cmake-build-debug\CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Andrea Sestito\Desktop\ProgettoAPI\cmake-build-debug\CMakeFiles" 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/ProgettoTesi.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Famiglia\Desktop\ProgettoAPI\cmake-build-debug\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Andrea Sestito\Desktop\ProgettoAPI\cmake-build-debug\CMakeFiles" 0
 .PHONY : CMakeFiles/ProgettoTesi.dir/rule
 
 # Convenience name for target.

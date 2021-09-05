@@ -43,6 +43,12 @@ typedef struct HeapNode* HeapNode;
 typedef struct Heap* Heap;
 
 
+void topK(Heap maxHeap);
+void updateRanking(Heap maxHeap, int k, int el);
+void printGraph(Graph graph, int graphId);
+void printArr(int dist[], int n);
+void printHeap(Heap heap);
+
 AdjListNode newAdjListNode(int dest, int weight) {
     AdjListNode newNode = (AdjListNode) malloc(sizeof(struct AdjListNode));
     newNode->dest = dest;
@@ -171,10 +177,10 @@ void heapify(HeapNode *arr, int n, int i) {
 
 void heapSort(HeapNode *arr, int n) {
 
-    for (int i = n / 2 - 1; i >= 0; i--)
+    for(int i = n / 2 - 1; i >= 0; i--)
         heapify(arr, n, i);
 
-    for (int i = n - 1; i > 0; i--) {
+    for(int i = n - 1; i > 0; i--) {
         swapHeapNode(&arr[0], &arr[i]);
         heapify(arr, i, 0);
     }
@@ -278,18 +284,14 @@ int dijkstraAlgorithm(Graph graph, int src) {
     }
 
     // print the calculated shortest distances
-    //printArr(dist, V);
+    printArr(dist, V);
 
     int minDistance = 0;
 
     return dist;
 }
 
-void topK(Heap maxHeap);
-void updateRanking(Heap maxHeap, int k, int el);
-void printGraph(Graph graph, int graphId);
-void printArr(int dist[], int n);
-void printHeap(Heap heap);
+
 
 int main(int argc, char * argv[]) {
 
@@ -314,18 +316,18 @@ int main(int argc, char * argv[]) {
             for(int i = 0; i < d ; i++) {
                 fscanf(fp,"%s\n",&line);
                 for(int j = 0; j < d; j++) {
-
+                    //TODO only works for weight < 10, parse file in order that every , it encounters it converts weight into integer
                     int weight = line[2*j]-'0';
 
                     if(weight != 0) {
+                        printf("\n\n%d\n\n",weight);
                         addEdge(graph, i, j, weight);
                     }
                 }
             }
+            int minPathValue = dijkstraAlgorithm(graph,0);
 
-            //int minPathValue = dijkstraAlgorithm(graph,0);
-
-            minPathValue = rand() % 100;
+            //minPathValue = rand() % 100;
 
             if(flag == 0 && k == maxHeap->size) {
                 heapSort(maxHeap->array, k);
