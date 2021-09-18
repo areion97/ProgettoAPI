@@ -3,38 +3,38 @@
 #include <string.h>
 
 struct AdjListNode
-        {
+{
     int dest;
     int weight;
     struct AdjListNode* next;
-        };
+};
 
 struct AdjList
-        {
+{
     struct AdjListNode *head;
-        };
+};
 
 struct Graph
-        {
+{
     int V;
     struct AdjList* array;
-        };
+};
 
 struct HeapNode
-        {
+{
     int  v;
     int dist;
-        };
+};
 
 struct Heap
-        {
+{
     int size;
     int capacity;
 
     // This is needed for decreaseKey()
     int *pos;
     struct HeapNode **array;
-        };
+};
 
 typedef struct Graph* Graph;
 typedef struct AdjListNode* AdjListNode;
@@ -219,8 +219,8 @@ int isInHeap(Heap minHeap, int v) {
     return 0;
 }
 
-// TODO Questa funzione deve restituire un intero che indichi il cammino minimo per quel grafo
 int dijkstraAlgorithm(Graph graph, int src) {
+    int sum = 0;
 
     int V = graph->V;
 
@@ -259,6 +259,7 @@ int dijkstraAlgorithm(Graph graph, int src) {
 
         // Store the extracted vertex number
         int u = minHeapNode->v;
+        sum +=dist[u];
 
         // Traverse through all adjacent
         // vertices of u (the extracted
@@ -286,12 +287,18 @@ int dijkstraAlgorithm(Graph graph, int src) {
     // print the calculated shortest distances
     printArr(dist, V);
 
-    int minDistance = 0;
-
-    return dist;
+    return sum;
 }
 
 
+void substr(char * string, char * newString, int start, int end) {
+
+    int pos = 0;
+    for(int i = start; i < end; i++) {
+        newString[pos] = string[i];
+        pos++;
+    }
+}
 
 int main(int argc, char * argv[]) {
 
@@ -301,9 +308,8 @@ int main(int argc, char * argv[]) {
     int graphId = 0;
 
     char line[100];
-    int minPathValue = 0;
     int flag = 0;
-    fp = fopen("c.txt", "r");
+    fp = fopen("b.txt", "r");
     fscanf(fp, "%d %d", &d, &k);
 
     Heap maxHeap = createHeap(k);
@@ -315,19 +321,31 @@ int main(int argc, char * argv[]) {
 
             for(int i = 0; i < d ; i++) {
                 fscanf(fp,"%s\n",&line);
-                for(int j = 0; j < d; j++) {
-                    //TODO only works for weight < 10, parse file in order that every , it encounters it converts weight into integer
-                    int weight = line[2*j]-'0';
+                int start = 0;
+                int weight = 0;
+                int destGraph = 0;
+                for(int j = 0; j <= strlen(line); j++) {
+                    if(line[j] == ',' || line[j] == '\000') {
+                        char newString [j-start];
+                        substr(line,newString,start,j);
+                        weight = atoi(newString);
+                        printf("Weight: %d\n", weight);
+                        start = j+1;
 
-                    if(weight != 0) {
-                        printf("\n\n%d\n\n",weight);
-                        addEdge(graph, i, j, weight);
+                        if(weight != 0) {
+                            addEdge(graph, i, destGraph, weight);
+                        }
+                        destGraph++;
+
                     }
+
+
                 }
             }
-            int minPathValue = dijkstraAlgorithm(graph,0);
 
-            //minPathValue = rand() % 100;
+
+
+            int minPathValue = dijkstraAlgorithm(graph,0);
 
             if(flag == 0 && k == maxHeap->size) {
                 heapSort(maxHeap->array, k);
@@ -336,6 +354,7 @@ int main(int argc, char * argv[]) {
 
             updateRanking(maxHeap,k,minPathValue);
 
+            printGraph(graph,graphId);
             graphId++;
 
         }
