@@ -37,9 +37,12 @@
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="cmake.loaded.for.project" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/cmake-build-debug/test" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Andrea Sestito\Desktop\ProgettoAPI\cmake-build-debug\test" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Famiglia\Desktop\ProgettoAPI\cmake-build-debug" />
     </key>
@@ -50,9 +53,9 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
   </component>
@@ -74,6 +77,11 @@
       <workItem from="1632040504316" duration="415000" />
       <workItem from="1632040990702" duration="113000" />
       <workItem from="1632042840493" duration="671000" />
+      <workItem from="1632044552840" duration="264000" />
+      <workItem from="1632045270268" duration="11875000" />
+      <workItem from="1632057775769" duration="1506000" />
+      <workItem from="1632059469749" duration="2467000" />
+      <workItem from="1632064255647" duration="1175000" />
     </task>
     <servers />
   </component>
@@ -93,19 +101,14 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/main.c</url>
-          <line>312</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/main.c</url>
-          <line>342</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CMakeRunConfiguration">
+        <watch expression="dist[0]" language="ObjectiveC" />
+        <watch expression="dist[1]" language="ObjectiveC" />
+        <watch expression="dist[2]" language="ObjectiveC" />
+        <watch expression="dist[3]" language="ObjectiveC" />
+        <watch expression="dist[4]" language="ObjectiveC" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
