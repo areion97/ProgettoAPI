@@ -24,6 +24,7 @@ struct HeapNode
 {
     int  v;
     int dist;
+    int graphId;
 };
 
 struct Heap
@@ -44,7 +45,7 @@ typedef struct Heap* Heap;
 
 
 void topK(Heap maxHeap);
-void updateRanking(Heap maxHeap, int k, int el);
+void updateRanking(Heap maxHeap, int k, int el, int graphId);
 void printGraph(Graph graph, int graphId);
 void printArr(int dist[], int n);
 void printHeap(Heap heap);
@@ -62,7 +63,6 @@ Graph createGraph(int V) {
     Graph graph = (Graph) malloc(sizeof(struct Graph));
     graph->V = V;
     graph->array = (AdjList) malloc(V * sizeof(struct AdjList));
-
     int i = 0;
     for (; i < V; ++i)
         graph->array[i].head = NULL;
@@ -78,10 +78,11 @@ void addEdge(Graph graph, int src, int dest, int weight) {
 
 }
 
-HeapNode createHeapNode(int v, int dist) {
+HeapNode createHeapNode(int v, int dist, int graphId) {
     HeapNode minHeapNode = (HeapNode) malloc(sizeof(struct HeapNode));
     minHeapNode->v = v;
     minHeapNode->dist = dist;
+    minHeapNode->graphId = graphId;
     return minHeapNode;
 }
 
@@ -145,6 +146,7 @@ void minHeapify(Heap minHeap, int idx) {
 }
 
 void addChild(Heap maxHeap, int child) {
+    // TODO controllare il corretto funzionamento della funzione
     int parent = (int)child/2;
 
     if (maxHeap->array[parent]->dist >= maxHeap->array[child-1]->dist ) {
@@ -234,13 +236,13 @@ int dijkstraAlgorithm(Graph graph, int src) {
     // vertices. dist value of all vertices
     for (int v = 0; v < V; ++v) {
         dist[v] = INT_MAX;
-        minHeap->array[v] = createHeapNode(v, dist[v]);
+        minHeap->array[v] = createHeapNode(v, dist[v],0);
         minHeap->pos[v] = v;
     }
 
     // Make dist value of src vertex
     // as 0 so that it is extracted first
-    minHeap->array[src] = createHeapNode(src, dist[src]);
+    minHeap->array[src] = createHeapNode(src, dist[src],0);
     minHeap->pos[src]   = src;
     dist[src] = 0;
     decreaseKey(minHeap, src, dist[src]);
@@ -284,9 +286,6 @@ int dijkstraAlgorithm(Graph graph, int src) {
         }
     }
 
-    // print the calculated shortest distances
-    printArr(dist, V);
-
     return sum;
 }
 
@@ -309,7 +308,7 @@ int main(int argc, char * argv[]) {
 
     char line[100];
     int flag = 0;
-    fp = fopen("b.txt", "r");
+    fp = fopen("test/input_1", "r");
     fscanf(fp, "%d %d", &d, &k);
 
     Heap maxHeap = createHeap(k);
@@ -326,35 +325,35 @@ int main(int argc, char * argv[]) {
                 int destGraph = 0;
                 for(int j = 0; j <= strlen(line); j++) {
                     if(line[j] == ',' || line[j] == '\000') {
-                        char newString [j-start];
-                        substr(line,newString,start,j);
+                        char newString[j - start];
+                        substr(line, newString, start, j);
                         weight = atoi(newString);
-                        printf("Weight: %d\n", weight);
-                        start = j+1;
+                        start = j + 1;
 
-                        if(weight != 0) {
+                        if (weight != 0) {
                             addEdge(graph, i, destGraph, weight);
                         }
                         destGraph++;
 
                     }
-
-
                 }
             }
 
 
-
             int minPathValue = dijkstraAlgorithm(graph,0);
+            printHeap(maxHeap);
+            printf("I am trying to insert:  %d\n", minPathValue);
 
             if(flag == 0 && k == maxHeap->size) {
                 heapSort(maxHeap->array, k);
+                printf("Heap sort!\n");
+                printHeap(maxHeap);
+
                 flag = 1;
             }
 
-            updateRanking(maxHeap,k,minPathValue);
+            updateRanking(maxHeap,k,minPathValue,graphId);
 
-            printGraph(graph,graphId);
             graphId++;
 
         }
@@ -369,11 +368,11 @@ int main(int argc, char * argv[]) {
 
 void topK(Heap maxHeap) {
     for(int i = 0; i < maxHeap->size; i++) {
-        printf("%d ",maxHeap->array[i]->dist);
+        printf("%d ",maxHeap->array[i]->graphId);
     }
 }
-// @Develop and @Test
-void updateRanking(Heap maxHeap, int k, int el) {
+
+void updateRanking(Heap maxHeap, int k, int el, int graphId) {
 
     HeapNode newHeapNode = NULL;
 
@@ -385,27 +384,22 @@ void updateRanking(Heap maxHeap, int k, int el) {
 
         HeapNode root = maxHeap->array[0];
 
-        printf("El %d is < of root %d ? %d\n\n", el, root->dist, el < root->dist);
-
         if(el < root->dist) {
-            newHeapNode = createHeapNode(maxHeap->size,el);
+            newHeapNode = createHeapNode(maxHeap->size,el,graphId);
             maxHeap->size++;
             maxHeap->array[maxHeap->size-1] = newHeapNode;
             addChild(maxHeap, maxHeap->size);
+            // TODO
             //Dealloc memory the node has been sostituted
             //maxHeap->array[maxHeap->size-1] = NULL;
         } else {
             return;
         }
     } else if(maxHeap->size < k) {
-        newHeapNode = createHeapNode(maxHeap->size,el);
+        newHeapNode = createHeapNode(maxHeap->size,el,graphId);
         maxHeap->size++;
         maxHeap->array[maxHeap->size-1] = newHeapNode;
-        printf("Inserisco il nodo alla classifica %d\n", el);
     }
-
-    printHeap(maxHeap);
-
 }
 
 void printGraph(Graph graph, int graphId) {
