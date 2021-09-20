@@ -37,7 +37,7 @@
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
     <property name="cmake.loaded.for.project" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/cmake-build-debug/test" />
+    <property name="last_opened_file_path" value="$USER_HOME$/CLionProjects/untitled" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -53,9 +53,9 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
   </component>
@@ -81,7 +81,17 @@
       <workItem from="1632045270268" duration="11875000" />
       <workItem from="1632057775769" duration="1506000" />
       <workItem from="1632059469749" duration="2467000" />
-      <workItem from="1632064255647" duration="1175000" />
+      <workItem from="1632064255647" duration="1559000" />
+      <workItem from="1632065939254" duration="54000" />
+      <workItem from="1632066048163" duration="705000" />
+      <workItem from="1632067230444" duration="1487000" />
+      <workItem from="1632071406249" duration="85000" />
+      <workItem from="1632072302201" duration="28000" />
+      <workItem from="1632073529863" duration="937000" />
+      <workItem from="1632143576624" duration="80000" />
+      <workItem from="1632143936956" duration="96000" />
+      <workItem from="1632148484751" duration="3401000" />
+      <workItem from="1632152247476" duration="630000" />
     </task>
     <servers />
   </component>
@@ -107,7 +117,7 @@
         <watch expression="dist[1]" language="ObjectiveC" />
         <watch expression="dist[2]" language="ObjectiveC" />
         <watch expression="dist[3]" language="ObjectiveC" />
-        <watch expression="dist[4]" language="ObjectiveC" />
+        <watch expression="newString" language="ObjectiveC" />
       </configuration>
     </watches-manager>
   </component>

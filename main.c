@@ -194,14 +194,18 @@ HeapNode extractMin(Heap minHeap) {
     if(isEmpty(minHeap))
         return NULL;
 
+    // Store the root node
     HeapNode root = minHeap->array[0];
 
+    // Replace root node with last node
     HeapNode lastNode = minHeap->array[minHeap->size - 1];
     minHeap->array[0] = lastNode;
 
+    // Update position of last node
     minHeap->pos[root->v] = minHeap->size-1;
     minHeap->pos[lastNode->v] = 0;
 
+    // Reduce heap size and heapify root
     --minHeap->size;
     minHeapify(minHeap, 0);
 
@@ -216,6 +220,7 @@ int isInHeap(Heap minHeap, int v) {
     return 0;
 }
 
+//TODO alcuni grafi sono particolari per cui vanno rivisti con carta e penna
 int dijkstraAlgorithm(Graph graph, int src) {
     int sum = 0;
 
@@ -256,9 +261,10 @@ int dijkstraAlgorithm(Graph graph, int src) {
             pCrawl = pCrawl->next;
         }
         if(dist[u] != INT_MAX)
-        sum +=dist[u];
+            sum +=dist[u];
 
     }
+
    // printArr(dist,minHeap->size);
     return sum;
 }
@@ -282,7 +288,7 @@ int main(int argc, char * argv[]) {
 
     char line[100];
     int flag = 0;
-    fp = fopen("test/input_5", "r");
+    fp = fopen("test/input_2", "r");
     fscanf(fp, "%d %d", &d, &k);
 
     Heap maxHeap = createHeap(k);
@@ -301,8 +307,10 @@ int main(int argc, char * argv[]) {
                     if(line[j] == ',' || line[j] == '\000') {
                         char newString[j - start];
                         substr(line, newString, start, j);
+                        newString[j-start] = '\0';
                         weight = atoi(newString);
                         start = j + 1;
+                        printf("Weigth %d\n", weight);
 
                         if (weight != 0) {
                             addEdge(graph, i, destGraph, weight);
@@ -314,12 +322,12 @@ int main(int argc, char * argv[]) {
             }
 
             int minPathValue = dijkstraAlgorithm(graph,0);
-            // printHeap(maxHeap);
-             printf("I am trying to insert:\n%d:  %d\n",graphId, minPathValue);
-
+             //printHeap(maxHeap);
+             //printf("\n%d:  %d\n",graphId, minPathValue);
+             printf("Sum is: %d\n",minPathValue);
             if(flag == 0 && k == maxHeap->size) {
                 heapSort(maxHeap->array, k);
-                printf("Heap sort!\n");
+                //printf("Heap sort!\n");
                 flag = 1;
             }
 
@@ -366,6 +374,10 @@ void updateRanking(Heap maxHeap, int k, int el, int graphId) {
         if(el < root->dist) {
             newHeapNode = createHeapNode(maxHeap->size,el,graphId);
             addChild(maxHeap,newHeapNode);
+
+            // TODO
+            //Dealloc memory the node has been sostituted
+            //maxHeap->array[maxHeap->size-1] = NULL;
         } else {
             return;
         }
@@ -400,3 +412,4 @@ void printHeap(Heap heap) {
     for (int i = 0; i < heap->size; i++)
         printf("%d \t\t %d\n", heap->array[i]->graphId, heap->array[i]->dist);
 }
+
