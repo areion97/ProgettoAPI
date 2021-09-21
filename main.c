@@ -286,9 +286,9 @@ int main(int argc, char * argv[]) {
     int k = 0;
     int graphId = 0;
 
-    char line[100];
+    char line[10000];
     int flag = 0;
-    fp = fopen("test/input_2", "r");
+    fp = fopen("test/input_6", "r");
     fscanf(fp, "%d %d", &d, &k);
 
     Heap maxHeap = createHeap(k);
@@ -310,7 +310,6 @@ int main(int argc, char * argv[]) {
                         newString[j-start] = '\0';
                         weight = atoi(newString);
                         start = j + 1;
-                        printf("Weigth %d\n", weight);
 
                         if (weight != 0) {
                             addEdge(graph, i, destGraph, weight);
@@ -324,7 +323,6 @@ int main(int argc, char * argv[]) {
             int minPathValue = dijkstraAlgorithm(graph,0);
              //printHeap(maxHeap);
              //printf("\n%d:  %d\n",graphId, minPathValue);
-             printf("Sum is: %d\n",minPathValue);
             if(flag == 0 && k == maxHeap->size) {
                 heapSort(maxHeap->array, k);
                 //printf("Heap sort!\n");
@@ -348,12 +346,13 @@ int main(int argc, char * argv[]) {
 void topK(Heap maxHeap) {
     if(maxHeap->size == 0) {
         printf("\n");
-
     }
     else {
         for(int i = 0; i < maxHeap->size; i++) {
             printf("%d ",maxHeap->array[i]->graphId);
         }
+        printf("\n");
+
     }
 }
 

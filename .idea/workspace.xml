@@ -92,6 +92,8 @@
       <workItem from="1632143936956" duration="96000" />
       <workItem from="1632148484751" duration="3401000" />
       <workItem from="1632152247476" duration="630000" />
+      <workItem from="1632205379015" duration="466000" />
+      <workItem from="1632215611474" duration="566000" />
     </task>
     <servers />
   </component>
@@ -111,6 +113,15 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/main.c</url>
+          <line>290</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
         <watch expression="dist[0]" language="ObjectiveC" />
