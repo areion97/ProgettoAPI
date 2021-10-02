@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#define FILE_NAME "../test/input.2"
+#define NSTRING 2000
 
 struct HeapNode {
     int  v;
@@ -32,7 +34,7 @@ void printHeap(Heap heap);
 HeapNode createHeapNode(int v, unsigned int dist, int graphId) {
     HeapNode minHeapNode = (HeapNode) malloc(sizeof(struct HeapNode));
     minHeapNode->v = v;
-    minHeapNode->dist = dist;
+    minHeapNode-> dist= dist;
     minHeapNode->graphId = graphId;
     return minHeapNode;
 }
@@ -44,6 +46,16 @@ Heap createHeap(int capacity) {
     minHeap->array = (HeapNode*) malloc(capacity *sizeof(HeapNode));
     return minHeap;
 }
+void destroyHeap(Heap h) {
+    for(int i = 0; i < h->size; i++) {
+    	free(h->array[i]);
+    }
+    free(h->pos);
+    free(h->array);
+    free(h);
+}
+
+
 void swapHeapNode(HeapNode *a, HeapNode *b) {
     HeapNode t = *a;
     *a = *b;
@@ -90,8 +102,20 @@ void heapSort(HeapNode *arr, int n) {
     }
 }
 void addChild(Heap heap, HeapNode newNode) {
+
+    HeapNode temp = heap->array[0];
     heap->array[0] = newNode;
-    heapSort(heap->array,heap->size);
+    free(temp);
+    
+    for(int i = 0; i<heap->size-1; i++) {
+
+    if(heap->array[i]->dist < heap->array[i+1]->dist) {
+        swapHeapNode(&heap->array[i], &heap->array[i+1]);
+    }else {
+        return;
+    }
+
+    }
 }
 
 void minHeapify(Heap minHeap, int idx) {
@@ -119,9 +143,9 @@ void minHeapify(Heap minHeap, int idx) {
     }
 }
 
-int minDistance(int *dist, int V, int *sptSet) {
+int minDistance(unsigned int *dist, int V, int *sptSet) {
     // Initialize min value
-    int min = INT_MAX, min_index;
+    unsigned int min = INT_MAX, min_index = 0;
 
     for (int v = 0; v < V; v++) {
         if (sptSet[v] == 0 && dist[v] <= min)
@@ -130,9 +154,9 @@ int minDistance(int *dist, int V, int *sptSet) {
     return min_index;
 }
 
-int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
-    int sum = 0;
-    int dist[V];
+unsigned int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
+    unsigned int sum = 0;
+    unsigned int dist[V];
     int sptSet[V];
     for (int i = 0; i < V; i++)
         dist[i] = INT_MAX, sptSet[i] = 0;
@@ -141,7 +165,7 @@ int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
 
     for (int count = 0; count < V-1; count++) {
 
-        int u = minDistance(dist, V, sptSet);
+        unsigned int u = minDistance(dist, V, sptSet);
         sptSet[u] = 1;
 
         for (int v = 0; v < V; v++) {
@@ -158,9 +182,6 @@ int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
 
     return sum;
 }
-
-
-
 
 void substr(char * string, char * newString, int start, int end) {
 
@@ -179,7 +200,7 @@ void printMatrix(int V, int matrix[V][V]) {
     }
 }
 
-#define NSTRING 2400
+
 int main(int argc, char * argv[]) {
 
     FILE *fp;
@@ -187,9 +208,8 @@ int main(int argc, char * argv[]) {
     char line[NSTRING];
     int d = 0;
     int k = 0;
-    int c;
     int flag = 0;
-    fp = fopen("../test/input.5", "r");
+    fp = fopen(FILE_NAME, "r");
     fscanf(fp,"%d %d\n",&d,&k);
     Heap maxHeap = createHeap(k);
 
@@ -226,15 +246,13 @@ int main(int argc, char * argv[]) {
                 }
             }
 
-             int minPathValue = dijkstraAlgorithm(d,matrix,0);
-            //printf("%d\n",minPathValue);
-            //printf("\n%d:  %d\n",graphId, minPathValue);
+            unsigned int minPathValue = dijkstraAlgorithm(d,matrix,0);
+
             if(flag == 0 && k == maxHeap->size) {
                heapSort(maxHeap->array, k);
-                //printf("Heap sort!\n");
                flag = 1;
           }
-
+	    //printHeap(maxHeap);
             updateRanking(maxHeap,k,minPathValue,graphId);
             graphId++;
 
@@ -244,6 +262,7 @@ int main(int argc, char * argv[]) {
         }
     }
 
+    destroyHeap(maxHeap);
     fclose(fp);
     return 0;
 }
@@ -275,10 +294,6 @@ void updateRanking(Heap maxHeap, int k, int el, int graphId) {
         if(el < root->dist) {
             newHeapNode = createHeapNode(maxHeap->size,el,graphId);
             addChild(maxHeap,newHeapNode);
-
-            // TODO
-            //Dealloc memory the node has been sostituted
-            //maxHeap->array[maxHeap->size-1] = NULL;
         } else {
             return;
         }
