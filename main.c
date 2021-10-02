@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#define FILE_NAME "../test/input.2"
+#define FILE_NAME "../test/input_4"
+#define OUT_FILE_NAME "candidate.1"
 #define NSTRING 2000
 
 struct HeapNode {
@@ -24,7 +25,7 @@ typedef struct HeapNode* HeapNode;
 typedef struct Heap* Heap;
 
 
-void topK(Heap maxHeap);
+void topK(FILE *out, Heap maxHeap);
 void updateRanking(Heap maxHeap, int k, int el, int graphId);
 void printGraph(Graph graph, int graphId);
 void printArr(unsigned int *dist, int n);
@@ -48,7 +49,7 @@ Heap createHeap(int capacity) {
 }
 void destroyHeap(Heap h) {
     for(int i = 0; i < h->size; i++) {
-    	free(h->array[i]);
+        free(h->array[i]);
     }
     free(h->pos);
     free(h->array);
@@ -106,14 +107,14 @@ void addChild(Heap heap, HeapNode newNode) {
     HeapNode temp = heap->array[0];
     heap->array[0] = newNode;
     free(temp);
-    
+
     for(int i = 0; i<heap->size-1; i++) {
 
-    if(heap->array[i]->dist < heap->array[i+1]->dist) {
-        swapHeapNode(&heap->array[i], &heap->array[i+1]);
-    }else {
-        return;
-    }
+        if(heap->array[i]->dist < heap->array[i+1]->dist) {
+            swapHeapNode(&heap->array[i], &heap->array[i+1]);
+        }else {
+            return;
+        }
 
     }
 }
@@ -158,8 +159,10 @@ unsigned int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
     unsigned int sum = 0;
     unsigned int dist[V];
     int sptSet[V];
-    for (int i = 0; i < V; i++)
+    for (int i = 0; i < V; i++) {
         dist[i] = INT_MAX, sptSet[i] = 0;
+        sptSet[V] = 0;
+     }
 
     dist[src] = 0;
 
@@ -202,25 +205,40 @@ void printMatrix(int V, int matrix[V][V]) {
 
 
 int main(int argc, char * argv[]) {
+    char file_in[100];
+    char file_out[100];
+    strcpy(file_in, FILE_NAME);
+    strcpy(file_out, OUT_FILE_NAME);
+    if(argc > 1)
+    {
+        strcpy(file_in, argv[1]);
+    }
+    if(argc > 2)
+    {
+        strcpy(file_out, argv[2]);
+    }
 
-    FILE *fp;
+    FILE *in, *out;
+    in = fopen(file_in, "r");
+    out = fopen(file_out, "w");
+
     int graphId = 0;
     char line[NSTRING];
     int d = 0;
     int k = 0;
     int flag = 0;
-    fp = fopen(FILE_NAME, "r");
-    fscanf(fp,"%d %d\n",&d,&k);
+    int dummyResult = fscanf(in,"%d %d\n",&d,&k);
+    if(dummyResult == 0) {printf("Wrong read!\n");}
     Heap maxHeap = createHeap(k);
 
-    while((fgets(line,NSTRING,fp)) != NULL) {
+    while((fgets(line,NSTRING,in)) != NULL) {
 
         if(strcmp(line,"AggiungiGrafo\n") == 0) {
             int matrix[d][d];
 
             for(int i = 0; i < d ; i++) {
-                fgets(line,NSTRING,fp);
-
+                char *dummyFgets = fgets(line,NSTRING,in);
+                if(dummyFgets == NULL) {printf("File finished\n");}
                 int start = 0;
                 int weight = 0;
                 int destGraph = 0;
@@ -249,32 +267,34 @@ int main(int argc, char * argv[]) {
             unsigned int minPathValue = dijkstraAlgorithm(d,matrix,0);
 
             if(flag == 0 && k == maxHeap->size) {
-               heapSort(maxHeap->array, k);
-               flag = 1;
-          }
-	    //printHeap(maxHeap);
+                heapSort(maxHeap->array, k);
+                flag = 1;
+            }
+            //printHeap(maxHeap);
             updateRanking(maxHeap,k,minPathValue,graphId);
             graphId++;
 
         }
         else if(strcmp(line,"TopK\n") == 0) {
-            topK(maxHeap);
+            topK(out,maxHeap);
         }
     }
 
     destroyHeap(maxHeap);
-    fclose(fp);
+
+    fclose(in);
+    fclose(out);
     return 0;
 }
 
-void topK(Heap maxHeap) {
+void topK(FILE *out, Heap maxHeap) {
     if(maxHeap->size == 0) {
-        printf("\n");
+        fprintf(out,"\n");
     } else {
         for(int i = 0; i < maxHeap->size; i++) {
-            printf("%d ",maxHeap->array[i]->graphId);
+            fprintf(out,"%d ",maxHeap->array[i]->graphId);
         }
-        printf("\n");
+        fprintf(out,"\n");
     }
 }
 
