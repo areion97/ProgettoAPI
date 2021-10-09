@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#define FILE_NAME "../test/input_4"
+#define FILE_NAME "../test/input.5"
 #define OUT_FILE_NAME "candidate.1"
 #define NSTRING 2000
 
@@ -102,15 +102,7 @@ void addChild(Heap heap, HeapNode newNode) {
     HeapNode temp = heap->array[0];
     heap->array[0] = newNode;
     free(temp);
-
-    for(int i = 0; i<heap->size-1; i++) {
-
-        if(heap->array[i]->dist < heap->array[i+1]->dist) {
-            swapHeapNode(&heap->array[i], &heap->array[i+1]);
-        }else {
-            return;
-        }
-    }
+    heapify(heap->array,heap->size,0);
 }
 
 void minHeapify(Heap minHeap, int idx) {
