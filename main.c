@@ -19,16 +19,12 @@ struct Heap {
 };
 
 typedef struct Graph* Graph;
-typedef struct AdjListNode* AdjListNode;
-typedef struct AdjList* AdjList;
 typedef struct HeapNode* HeapNode;
 typedef struct Heap* Heap;
-
 
 void topK(FILE *out, Heap maxHeap);
 void updateRanking(Heap maxHeap, int k, int el, int graphId);
 void printGraph(Graph graph, int graphId);
-void printArr(unsigned int *dist, int n);
 void printHeap(Heap heap);
 
 
@@ -47,6 +43,7 @@ Heap createHeap(int capacity) {
     minHeap->array = (HeapNode*) malloc(capacity *sizeof(HeapNode));
     return minHeap;
 }
+
 void destroyHeap(Heap h) {
     for(int i = 0; i < h->size; i++) {
         free(h->array[i]);
@@ -56,15 +53,13 @@ void destroyHeap(Heap h) {
     free(h);
 }
 
-
 void swapHeapNode(HeapNode *a, HeapNode *b) {
     HeapNode t = *a;
     *a = *b;
     *b = t;
 }
 
-void maxHeapify(Heap heap, int n, int i)
-{
+void maxHeapify(Heap heap, int n, int i) {
     int parent = (i - 1) / 2;
 
     if (heap->array[parent] > 0) {
@@ -80,13 +75,13 @@ void heapify(HeapNode *arr, int n, int i) {
     int l = 2 * i + 1;
     int r = 2 * i + 2;
 
-    if (l < n && arr[l]->dist < arr[largest]->dist)
+    if(l < n && arr[l]->dist < arr[largest]->dist)
         largest = l;
 
-    if (r < n && arr[r]->dist < arr[largest]->dist)
+    if(r < n && arr[r]->dist < arr[largest]->dist)
         largest = r;
 
-    if (largest != i) {
+    if(largest != i) {
         swapHeapNode(&arr[i], &arr[largest]);
         heapify(arr, n, largest);
     }
@@ -115,12 +110,12 @@ void addChild(Heap heap, HeapNode newNode) {
         }else {
             return;
         }
-
     }
 }
 
 void minHeapify(Heap minHeap, int idx) {
     int smallest, left, right;
+
     smallest = idx;
     left = 2 * idx + 1;
     right = 2 * idx + 2;
@@ -139,13 +134,11 @@ void minHeapify(Heap minHeap, int idx) {
         minHeap->pos[idxNode->v] = smallest;
 
         swapHeapNode(&minHeap->array[smallest], &minHeap->array[idx]);
-
         minHeapify(minHeap, smallest);
     }
 }
 
-int minDistance(unsigned int *dist, int V, int *sptSet) {
-    // Initialize min value
+unsigned int minDistance(unsigned int *dist, int V, int *sptSet) {
     unsigned int min = INT_MAX, min_index = 0;
 
     for (int v = 0; v < V; v++) {
@@ -163,9 +156,7 @@ unsigned int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
         dist[i] = INT_MAX, sptSet[i] = 0;
         sptSet[V] = 0;
      }
-
     dist[src] = 0;
-
     for (int count = 0; count < V-1; count++) {
 
         unsigned int u = minDistance(dist, V, sptSet);
@@ -175,7 +166,6 @@ unsigned int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
             if (!sptSet[v] && matrix[u][v] && dist[u] != INT_MAX && dist[u] + matrix[u][v] < dist[v])
                 dist[v] = dist[u] + matrix[u][v];
         }
-
     }
 
     for(int i = 0; i<V; i++) {
@@ -194,27 +184,16 @@ void substr(char * string, char * newString, int start, int end) {
         pos++;
     }
 }
-void printMatrix(int V, int matrix[V][V]) {
-    for(int i = 0; i < V; i++) {
-        for(int j = 0; j < V; j++) {
-            printf("%d, ",matrix[i][j]);
-        }
-        printf("\n");
-    }
-}
-
 
 int main(int argc, char * argv[]) {
     char file_in[100];
     char file_out[100];
     strcpy(file_in, FILE_NAME);
     strcpy(file_out, OUT_FILE_NAME);
-    if(argc > 1)
-    {
+    if(argc > 1) {
         strcpy(file_in, argv[1]);
     }
-    if(argc > 2)
-    {
+    if(argc > 2) {
         strcpy(file_out, argv[2]);
     }
 
@@ -270,7 +249,6 @@ int main(int argc, char * argv[]) {
                 heapSort(maxHeap->array, k);
                 flag = 1;
             }
-            //printHeap(maxHeap);
             updateRanking(maxHeap,k,minPathValue,graphId);
             graphId++;
 
@@ -281,7 +259,6 @@ int main(int argc, char * argv[]) {
     }
 
     destroyHeap(maxHeap);
-
     fclose(in);
     fclose(out);
     return 0;
@@ -306,9 +283,7 @@ void updateRanking(Heap maxHeap, int k, int el, int graphId) {
     if(maxHeap->size > k) {
         return;
     }
-
     if(maxHeap->size == k) {
-
         HeapNode root = maxHeap->array[0];
 
         if(el < root->dist) {
@@ -322,13 +297,6 @@ void updateRanking(Heap maxHeap, int k, int el, int graphId) {
         maxHeap->size++;
         maxHeap->array[maxHeap->size-1] = newHeapNode;
     }
-}
-
-
-void printArr(unsigned int *dist, int n) {
-    printf("Vertex   Distance from Source\n");
-    for (int i = 0; i < n; i++)
-        printf("%d \t\t %d\n", i, dist[i]);
 }
 
 void printHeap(Heap heap) {
