@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#define FILE_NAME "../test/input.5"
+#define FILE_NAME "../test/input_1"
 #define OUT_FILE_NAME "candidate.1"
 #define NSTRING 2000
 
@@ -59,15 +59,21 @@ void swapHeapNode(HeapNode *a, HeapNode *b) {
     *b = t;
 }
 
-void maxHeapify(Heap heap, int n, int i) {
-    int parent = (i - 1) / 2;
+void maxHeapify(HeapNode *arr, int n, int i) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+ 
+    if (l < n && arr[l]->dist > arr[largest]->dist)
+        largest = l;
+ 
+    if (r < n && arr[r]->dist > arr[largest]->dist)
+        largest = r;
+ 
 
-    if (heap->array[parent] > 0) {
-
-        if (heap->array[i] > heap->array[parent]) {
-            swapHeapNode(&heap->array[i], &heap->array[parent]);
-            maxHeapify(heap, n, n-1);
-        }
+    if (largest != i) {
+        swapHeapNode(&arr[i], &arr[largest]);
+        maxHeapify(arr, n, largest);
     }
 }
 void heapify(HeapNode *arr, int n, int i) {
@@ -102,7 +108,7 @@ void addChild(Heap heap, HeapNode newNode) {
     HeapNode temp = heap->array[0];
     heap->array[0] = newNode;
     free(temp);
-    heapify(heap->array,heap->size,0);
+    maxHeapify(heap->array,heap->size,0);
 }
 
 void minHeapify(Heap minHeap, int idx) {
@@ -241,6 +247,7 @@ int main(int argc, char * argv[]) {
                 heapSort(maxHeap->array, k);
                 flag = 1;
             }
+
             updateRanking(maxHeap,k,minPathValue,graphId);
             graphId++;
 
@@ -261,7 +268,8 @@ void topK(FILE *out, Heap maxHeap) {
         fprintf(out,"\n");
     } else {
         for(int i = 0; i < maxHeap->size; i++) {
-            fprintf(out,"%d ",maxHeap->array[i]->graphId);
+            if(i == maxHeap->size-1) fprintf(out,"%d",maxHeap->array[i]->graphId);
+            else fprintf(out,"%d ",maxHeap->array[i]->graphId);
         }
         fprintf(out,"\n");
     }
