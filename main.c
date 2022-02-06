@@ -1,10 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <limits.h>
-#define FILE_NAME "../test/input_1"
-#define OUT_FILE_NAME "candidate.1"
-#define NSTRING 2000
 
 struct HeapNode {
     int  v;
@@ -22,12 +18,8 @@ typedef struct Graph* Graph;
 typedef struct HeapNode* HeapNode;
 typedef struct Heap* Heap;
 
-void topK(FILE *out, Heap maxHeap);
-void updateRanking(Heap maxHeap, int k, int el, int graphId);
-void printGraph(Graph graph, int graphId);
-void printHeap(Heap heap);
 
-
+// Allocates memory and initializes Heap Node
 HeapNode createHeapNode(int v, unsigned int dist, int graphId) {
     HeapNode minHeapNode = (HeapNode) malloc(sizeof(struct HeapNode));
     minHeapNode->v = v;
@@ -36,6 +28,7 @@ HeapNode createHeapNode(int v, unsigned int dist, int graphId) {
     return minHeapNode;
 }
 
+// Allocates memory and initializes Max Heap
 Heap createHeap(int capacity) {
     Heap minHeap = (Heap) malloc(sizeof(struct Heap));
     minHeap->pos = (int *)malloc(capacity * sizeof(int));
@@ -44,6 +37,7 @@ Heap createHeap(int capacity) {
     return minHeap;
 }
 
+// Deallocates memory
 void destroyHeap(Heap h) {
     for(int i = 0; i < h->size; i++) {
         free(h->array[i]);
@@ -53,29 +47,32 @@ void destroyHeap(Heap h) {
     free(h);
 }
 
+// Swaps the content of 2 nodes without allocating memory
 void swapHeapNode(HeapNode *a, HeapNode *b) {
     HeapNode t = *a;
     *a = *b;
     *b = t;
 }
 
+// Auxiliary function for adding a child to Heap
 void maxHeapify(HeapNode *arr, int n, int i) {
     int largest = i;
     int l = 2 * i + 1;
     int r = 2 * i + 2;
- 
+
     if (l < n && arr[l]->dist > arr[largest]->dist)
         largest = l;
- 
+
     if (r < n && arr[r]->dist > arr[largest]->dist)
         largest = r;
- 
 
     if (largest != i) {
         swapHeapNode(&arr[i], &arr[largest]);
         maxHeapify(arr, n, largest);
     }
 }
+
+// Sort an array of HeapNodes for heapSort
 void heapify(HeapNode *arr, int n, int i) {
     int largest = i;
     int l = 2 * i + 1;
@@ -93,8 +90,8 @@ void heapify(HeapNode *arr, int n, int i) {
     }
 }
 
+// Sorts array of HeapNodes
 void heapSort(HeapNode *arr, int n) {
-
     for(int i = n / 2 - 1; i >= 0; i--)
         heapify(arr, n, i);
 
@@ -103,179 +100,16 @@ void heapSort(HeapNode *arr, int n) {
         heapify(arr, i, 0);
     }
 }
-void addChild(Heap heap, HeapNode newNode) {
 
+// Adds a child to Heap and sorts Heap
+void addChild(Heap heap, HeapNode newNode) {
     HeapNode temp = heap->array[0];
     heap->array[0] = newNode;
     free(temp);
     maxHeapify(heap->array,heap->size,0);
 }
 
-void minHeapify(Heap minHeap, int idx) {
-    int smallest, left, right;
-
-    smallest = idx;
-    left = 2 * idx + 1;
-    right = 2 * idx + 2;
-
-    if (left < minHeap->size && minHeap->array[left]->dist < minHeap->array[smallest]->dist )
-        smallest = left;
-
-    if (right < minHeap->size && minHeap->array[right]->dist < minHeap->array[smallest]->dist )
-        smallest = right;
-
-    if (smallest != idx) {
-        HeapNode smallestNode = minHeap->array[smallest];
-        HeapNode idxNode = minHeap->array[idx];
-
-        minHeap->pos[smallestNode->v] = idx;
-        minHeap->pos[idxNode->v] = smallest;
-
-        swapHeapNode(&minHeap->array[smallest], &minHeap->array[idx]);
-        minHeapify(minHeap, smallest);
-    }
-}
-
-unsigned int minDistance(unsigned int *dist, int V, int *sptSet) {
-    unsigned int min = INT_MAX, min_index = 0;
-
-    for (int v = 0; v < V; v++) {
-        if (sptSet[v] == 0 && dist[v] <= min)
-            min = dist[v], min_index = v;
-    }
-    return min_index;
-}
-
-unsigned int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
-    unsigned int sum = 0;
-    unsigned int dist[V];
-    int sptSet[V];
-    for (int i = 0; i < V; i++) {
-        dist[i] = INT_MAX, sptSet[i] = 0;
-        sptSet[V] = 0;
-     }
-    dist[src] = 0;
-    for (int count = 0; count < V-1; count++) {
-
-        unsigned int u = minDistance(dist, V, sptSet);
-        sptSet[u] = 1;
-
-        for (int v = 0; v < V; v++) {
-            if (!sptSet[v] && matrix[u][v] && dist[u] != INT_MAX && dist[u] + matrix[u][v] < dist[v])
-                dist[v] = dist[u] + matrix[u][v];
-        }
-    }
-
-    for(int i = 0; i<V; i++) {
-        if (dist[i] != INT_MAX)
-            sum += dist[i];
-    }
-
-    return sum;
-}
-
-void substr(char * string, char * newString, int start, int end) {
-
-    int pos = 0;
-    for(int i = start; i < end; i++) {
-        newString[pos] = string[i];
-        pos++;
-    }
-}
-
-int main(int argc, char * argv[]) {
-    char file_in[100];
-    char file_out[100];
-    strcpy(file_in, FILE_NAME);
-    strcpy(file_out, OUT_FILE_NAME);
-    if(argc > 1) {
-        strcpy(file_in, argv[1]);
-    }
-    if(argc > 2) {
-        strcpy(file_out, argv[2]);
-    }
-
-    FILE *in, *out;
-    in = fopen(file_in, "r");
-    out = fopen(file_out, "w");
-
-    int graphId = 0;
-    char line[NSTRING];
-    int d = 0;
-    int k = 0;
-    int flag = 0;
-    int dummyResult = fscanf(in,"%d %d\n",&d,&k);
-    if(dummyResult == 0) {printf("Wrong read!\n");}
-    Heap maxHeap = createHeap(k);
-
-    while((fgets(line,NSTRING,in)) != NULL) {
-
-        if(strcmp(line,"AggiungiGrafo\n") == 0) {
-            int matrix[d][d];
-
-            for(int i = 0; i < d ; i++) {
-                char *dummyFgets = fgets(line,NSTRING,in);
-                if(dummyFgets == NULL) {printf("File finished\n");}
-                int start = 0;
-                int weight = 0;
-                int destGraph = 0;
-
-                for(int j = 0; j <= strlen(line); j++) {
-                    if(line[j] == ',' || line[j] == '\000') {
-
-                        char newString[j - start];
-                        substr(line, newString, start, j);
-                        newString[j-start] = '\0';
-                        weight = atoi(newString);
-                        start = j + 1;
-
-                        if (weight != 0) {
-                            matrix[i][destGraph] = weight;
-
-                        }else {
-                            matrix[i][destGraph] = 0;
-                        }
-
-                        destGraph++;
-                    }
-                }
-            }
-
-            unsigned int minPathValue = dijkstraAlgorithm(d,matrix,0);
-
-            if(flag == 0 && k == maxHeap->size) {
-                heapSort(maxHeap->array, k);
-                flag = 1;
-            }
-
-            updateRanking(maxHeap,k,minPathValue,graphId);
-            graphId++;
-
-        }
-        else if(strcmp(line,"TopK\n") == 0) {
-            topK(out,maxHeap);
-        }
-    }
-
-    destroyHeap(maxHeap);
-    fclose(in);
-    fclose(out);
-    return 0;
-}
-
-void topK(FILE *out, Heap maxHeap) {
-    if(maxHeap->size == 0) {
-        fprintf(out,"\n");
-    } else {
-        for(int i = 0; i < maxHeap->size; i++) {
-            if(i == maxHeap->size-1) fprintf(out,"%d",maxHeap->array[i]->graphId);
-            else fprintf(out,"%d ",maxHeap->array[i]->graphId);
-        }
-        fprintf(out,"\n");
-    }
-}
-
-
+// Decides whether to update or not MaxHeap everytime a new adjaceny matrix is read
 void updateRanking(Heap maxHeap, int k, int el, int graphId) {
 
     HeapNode newHeapNode = NULL;
@@ -299,8 +133,136 @@ void updateRanking(Heap maxHeap, int k, int el, int graphId) {
     }
 }
 
+
+// Auxiliary function used by dijkstraAlgorithm for calculating minimum distance
+unsigned int minDistance(unsigned int *dist, int V, int *sptSet) {
+    unsigned int min = INT_MAX, min_index = 0;
+
+    for (int v = 0; v < V; v++) {
+        if (sptSet[v] == 0 && dist[v] <= min)
+            min = dist[v], min_index = v;
+    }
+    return min_index;
+}
+
+// Implementation of Dijkstra Algorithm
+unsigned int dijkstraAlgorithm(int V, int matrix[V][V], int src) {
+    unsigned int sum = 0;
+    unsigned int dist[V];
+    int sptSet[V];
+    for (int i = 0; i < V; i++) {
+        dist[i] = INT_MAX, sptSet[i] = 0;
+        sptSet[V] = 0;
+    }
+    dist[src] = 0;
+    for (int count = 0; count < V-1; count++) {
+        unsigned int u = minDistance(dist, V, sptSet);
+        sptSet[u] = 1;
+
+        for (int v = 0; v < V; v++) {
+            if (!sptSet[v] && matrix[u][v] && dist[u] != INT_MAX && dist[u] + matrix[u][v] < dist[v])
+                dist[v] = dist[u] + matrix[u][v];
+        }
+    }
+
+    for(int i = 0; i<V; i++) {
+        if (dist[i] != INT_MAX)
+            sum += dist[i];
+    }
+
+    return sum;
+}
+
+// Moves FILE pointer to the end of the line
+void moveBufferToEnd(FILE * in) {
+    char c = '\0';
+    while(c != '\n' && feof(in) == 0) c = fgetc(in);
+}
+
+void topK(FILE *out, Heap maxHeap) {
+    if(maxHeap->size == 0) {
+        fprintf(out,"\n");
+    } else {
+        for(int i = 0; i < maxHeap->size; i++) {
+            if(i == maxHeap->size-1) fprintf(out,"%d",maxHeap->array[i]->graphId);
+            else fprintf(out,"%d ",maxHeap->array[i]->graphId);
+        }
+        fprintf(out,"\n");
+    }
+}
+
 void printHeap(Heap heap) {
-    printf("\nHeap Representation\n");
+    printf("\nHeap:\n");
     for (int i = 0; i < heap->size; i++)
         printf("%d \t\t %d\n", heap->array[i]->graphId, heap->array[i]->dist);
+}
+
+int main(int argc, char * argv[]) {
+
+    // Initialize file pointers
+    FILE *in, *out;
+    in = stdin;
+    out = stdout;
+
+    // Reads d and k values
+    int d = 0;
+    int k = 0;
+    int dummyResult = fscanf(in,"%d %d\n",&d,&k);
+    if(dummyResult == 0) {return 0;}
+
+    int matrix[d][d];
+    int NSTRING = d*10 + 3;
+    char line[NSTRING];
+    int flag = 0;
+    int graphId = 0;
+
+    Heap maxHeap = createHeap(k);
+
+    // Loop instruction until file ends
+    while(feof(in) == 0) {
+        line[0] = getc(in);
+
+        // AggiungiGrafo - Reads adjacency matrix, calculates dijkstra and updates MaxHeap
+        if(line[0] == 'A') {
+            char * newString;
+            moveBufferToEnd(in);
+            // Loop rows of adjacency matrix
+            for(int i = 0; i < d; i++) {
+                char *tmp = fgets(line,NSTRING,in);
+                if(tmp == NULL) return 0;
+                int col = 0;
+                newString = ",";
+                // Loops cols of adjacency matrix
+                for (const char *ptr = line; *newString == ','; ptr = newString + 1) {
+                    matrix[i][col] = (int)strtol(ptr, &newString, 10);
+                    col++;
+                    if (newString == ptr)
+                        break;
+                }
+            }
+
+            // Calculate dijkstra
+            unsigned int minPathValue = dijkstraAlgorithm(d,matrix,0);
+            if(flag == 0 && k == maxHeap->size) {
+                heapSort(maxHeap->array, k);
+                flag = 1;
+            }
+
+            // Updates Max Heap
+            updateRanking(maxHeap,k,minPathValue,graphId);
+            graphId++;
+        }
+        // Prints topK Graphs contained in Max Heap
+        else if(line[0] == 'T') {
+            moveBufferToEnd(in);
+            topK(out,maxHeap);
+        }
+
+    }
+
+    // Cleans memory and close files
+    destroyHeap(maxHeap);
+    fclose(in);
+    fclose(out);
+    return 0;
 }
